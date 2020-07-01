@@ -32,8 +32,8 @@ jobs:
         for project in alarm-datastore-cassandra alarm-datastore-common-test; do
           echo "Triggering sonar for ${project}"
 
-          curl -s --location --request POST "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
-          --header "Authorization: Bearer ${GITHUB_TOKEN}" \
+          curl -s --location --request POST "https://api.github.com/repos/${{ env.GITHUB_REPOSITORY }}/dispatches" \
+          --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           --header "Content-Type: application/json" \
           --data-raw "{
               \"event_type\": \"matrix-sonar\",
