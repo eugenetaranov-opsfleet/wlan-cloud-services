@@ -160,14 +160,12 @@ jobs:
     #       - system-event-service-local
     #       - system-event-service-remote
     runs-on: ubuntu-latest
-    outputs:
-      list_projects: ${{ steps.list_projects.outputs.projects }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-      with:
+      # with:
         # path: wlan-cloud-services
-        ref: master
+        # ref: master
         # fetch-depth: 0
     # - name: Checkout dependency Telecominfraproject/wlan-cloud-root
     #   uses: actions/checkout@v2
@@ -212,9 +210,9 @@ jobs:
     #       mvn sonar:sonar -Dsonar.host.url=${{ env.SONAR_URL }} -Dsonar.login=${{ secrets.SONAR_LOGIN }} -Dsonar.organization=${{ env.SONAR_ORGANIZATION }} -Dsonar.projectKey=$project
     #       cd $OLDPWD
     #     done
-    - id: list_projects
+    - name: list projects
       run: |
-        PROJECTS=$(find . -exec test -f {}/pom.xml \; -printf '%f\n' -prune)
+        export PROJECTS=$(find . -exec test -f {}/pom.xml \; -printf '%f\n' -prune)
         echo "::set-output name=projects::${PROJECTS}"
     - name: test
       run: |
