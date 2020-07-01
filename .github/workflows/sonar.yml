@@ -41,7 +41,7 @@ jobs:
     - name: Configure maven settings.xml
       run: cp wlan-cloud-services/.github/workflows/maven_settings_template.xml /home/runner/.m2/settings.xml
     - name: Maven build
-      working-directory: wlan-cloud-services/${{ github.event.client_payload.projects }}
+      working-directory: wlan-cloud-services/${{ github.event.client_payload.project }}
       env:
         MAVEN_REPO_USERNAME: build-pipeline
         MAVEN_REPO_PASSWORD: ${{ secrets.MAVEN_REPO_PASSWORD }}
