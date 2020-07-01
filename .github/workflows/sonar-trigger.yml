@@ -4,11 +4,6 @@ on:
   push:
     branches: [ master ]
 
-# env:
-#   SONAR_URL: https://sonarcloud.io
-#   SONAR_ORGANIZATION: telecominfraproject
-#   MAVEN_OPTS: -Xmx3g -Xss2m # prevents java.lang.StackOverflowError
-
 jobs:
   sonar:
     runs-on: ubuntu-latest
@@ -17,23 +12,11 @@ jobs:
       uses: actions/checkout@v2
       with:
         ref: master
-    # - name: Run sonar
-    #   working-directory: wlan-cloud-services/${{ github.event.client_payload.project }}
-    #   env:
-    #     # MAVEN_REPO_USERNAME: build-pipeline
-    #     MAVEN_REPO_USERNAME: tip-read
-    #     MAVEN_REPO_PASSWORD: ${{ secrets.MAVEN_REPO_PASSWORD }}
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   run: mvn sonar:sonar -Dsonar.host.url=${{ env.SONAR_URL }} -Dsonar.login=${{ secrets.SONAR_LOGIN }} -Dsonar.organization=${{ env.SONAR_ORGANIZATION }} -Dsonar.projectKey=${{ github.event.client_payload.project }}
     - name: Trigger sonar analysis
-      # env:
-      #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        printenv
-
         echo URL "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches"
 
-        for project in alarm-datastore-cassandra alarm-datastore-common-test; do
+        for project in $(find . -exec test -f {}/pom.xml \; -printf '%f\n' -prune); do
           echo "Triggering sonar analysis for project ${project}"
 
           curl -s --location --request POST "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
