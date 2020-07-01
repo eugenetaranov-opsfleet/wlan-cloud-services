@@ -211,6 +211,7 @@ jobs:
     #       cd $OLDPWD
     #     done
     - name: list projects
+      id: list_projects
       run: |
         echo ::set-output name=projects::$(find . -exec test -f {}/pom.xml \; -printf '%f\n' -prune)
     - name: test
