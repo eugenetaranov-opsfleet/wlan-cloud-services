@@ -3,8 +3,6 @@ name: Run sonar analysis
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 env:
   SONAR_URL: https://sonarcloud.io
@@ -162,30 +160,32 @@ jobs:
     #       - system-event-service-local
     #       - system-event-service-remote
     runs-on: ubuntu-latest
+    outputs:
+      list_projects: ${{ steps.list_projects.outputs.projects }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
-        path: wlan-cloud-services
+        # path: wlan-cloud-services
         ref: master
-        fetch-depth: 0
-    - name: Checkout dependency Telecominfraproject/wlan-cloud-root
-      uses: actions/checkout@v2
-      with:
-        repository: Telecominfraproject/wlan-cloud-root
-        path: wlan-cloud-root
-        fetch-depth: 0
-    - name: Set up JDK 14
-      uses: actions/setup-java@v1
-      with:
-        java-version: 14
-    - name: Cache Maven packages
-      uses: actions/cache@v1
-      with:
-        path: ~/.m2/repository/
-        key: ${{ runner.os }}-m2
-    - name: Configure maven settings.xml
-      run: cp wlan-cloud-services/.github/workflows/maven_settings_template.xml /home/runner/.m2/settings.xml
+        # fetch-depth: 0
+    # - name: Checkout dependency Telecominfraproject/wlan-cloud-root
+    #   uses: actions/checkout@v2
+    #   with:
+    #     repository: Telecominfraproject/wlan-cloud-root
+    #     path: wlan-cloud-root
+    #     fetch-depth: 0
+    # - name: Set up JDK 14
+    #   uses: actions/setup-java@v1
+    #   with:
+    #     java-version: 14
+    # - name: Cache Maven packages
+    #   uses: actions/cache@v1
+    #   with:
+    #     path: ~/.m2/repository/
+    #     key: ${{ runner.os }}-m2
+    # - name: Configure maven settings.xml
+    #   run: cp wlan-cloud-services/.github/workflows/maven_settings_template.xml /home/runner/.m2/settings.xml
     # - name: Maven build
     #   working-directory: wlan-cloud-services/${{ matrix.project }}
     #   env:
@@ -193,23 +193,31 @@ jobs:
     #     MAVEN_REPO_PASSWORD: ${{ secrets.MAVEN_REPO_PASSWORD }}
     #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     #   run: mvn clean install
-    - name: Run sonar
-      # working-directory: wlan-cloud-services/${{ matrix.project }}
-      working-directory: wlan-cloud-services/
-      env:
-        MAVEN_REPO_USERNAME: build-pipeline
-        MAVEN_REPO_PASSWORD: ${{ secrets.MAVEN_REPO_PASSWORD }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        echo "GITHUB_REF ${{ env.GITHUB_REF }}"
-        GITHUB_BRANCH=$(git branch --show-current)
+    # - name: Run sonar
+    #   # working-directory: wlan-cloud-services/${{ matrix.project }}
+    #   working-directory: wlan-cloud-services/
+    #   env:
+    #     MAVEN_REPO_USERNAME: build-pipeline
+    #     MAVEN_REPO_PASSWORD: ${{ secrets.MAVEN_REPO_PASSWORD }}
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   run: |
+    #     echo "GITHUB_REF ${{ env.GITHUB_REF }}"
+    #     GITHUB_BRANCH=$(git branch --show-current)
 
-        for project in $(ls -d */ | sed 's/\///'); do
-          cd $project
-          echo "*** Project: ${project} ***"
-          mvn clean install
-          # mvn sonar:sonar -Dsonar.host.url=${{ env.SONAR_URL }} -Dsonar.login=${{ secrets.SONAR_LOGIN }} -Dsonar.organization=${{ env.SONAR_ORGANIZATION }} -Dsonar.projectKey=$project -Dsonar.pullrequest.base=master -Dsonar.pullrequest.key=13
-          mvn sonar:sonar -Dsonar.host.url=${{ env.SONAR_URL }} -Dsonar.login=${{ secrets.SONAR_LOGIN }} -Dsonar.organization=${{ env.SONAR_ORGANIZATION }} -Dsonar.projectKey=$project
-          cd $OLDPWD
-        done
+    #     for project in $(ls -d */ | sed 's/\///'); do
+    #       cd $project
+    #       echo "*** Project: ${project} ***"
+    #       mvn clean install
+    #       # mvn sonar:sonar -Dsonar.host.url=${{ env.SONAR_URL }} -Dsonar.login=${{ secrets.SONAR_LOGIN }} -Dsonar.organization=${{ env.SONAR_ORGANIZATION }} -Dsonar.projectKey=$project -Dsonar.pullrequest.base=master -Dsonar.pullrequest.key=13
+    #       mvn sonar:sonar -Dsonar.host.url=${{ env.SONAR_URL }} -Dsonar.login=${{ secrets.SONAR_LOGIN }} -Dsonar.organization=${{ env.SONAR_ORGANIZATION }} -Dsonar.projectKey=$project
+    #       cd $OLDPWD
+    #     done
+    - id: list_projects
+      run: |
+        PROJECTS=$(find . -exec test -f {}/pom.xml \; -printf '%f\n' -prune)
+        echo "::set-output name=projects::${PROJECTS}"
+    - name: test
+      run: |
+        echo "Projects"
+        echo ${{ needs.sonar.outputs.list_projects }}
 #
