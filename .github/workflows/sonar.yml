@@ -1,8 +1,10 @@
 name: Run sonar analysis
 
 on:
-  push:
-    branches: [ master ]
+  repository_dispatch:
+    types: [matrix-sonar]
+  # push:
+  #   branches: [ master ]
 
 env:
   SONAR_URL: https://sonarcloud.io
@@ -210,12 +212,14 @@ jobs:
     #       mvn sonar:sonar -Dsonar.host.url=${{ env.SONAR_URL }} -Dsonar.login=${{ secrets.SONAR_LOGIN }} -Dsonar.organization=${{ env.SONAR_ORGANIZATION }} -Dsonar.projectKey=$project
     #       cd $OLDPWD
     #     done
-    - name: list projects
-      id: list_projects
-      run: |
-        echo ::set-output name=projects::$(find . -exec test -f {}/pom.xml \; -printf '%f\n' -prune)
+    # - name: list projects
+    #   id: list_projects
+    #   run: |
+    #     echo ::set-output name=projects::$(find . -exec test -f {}/pom.xml \; -printf '%f\n' -prune)
+    # - name: test
+    #   run: |
+    #     echo "Projects"
+    #     echo kk ${{ steps.list_projects.outputs.projects }}
     - name: test
-      run: |
-        echo "Projects"
-        echo kk ${{ steps.list_projects.outputs.projects }}
+      run: date
 #
