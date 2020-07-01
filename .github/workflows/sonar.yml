@@ -212,10 +212,9 @@ jobs:
     #     done
     - name: list projects
       run: |
-        export PROJECTS=$(find . -exec test -f {}/pom.xml \; -printf '%f\n' -prune)
-        echo "::set-output name=projects::${PROJECTS}"
+        echo ::set-output name=projects::$(find . -exec test -f {}/pom.xml \; -printf '%f\n' -prune)
     - name: test
       run: |
         echo "Projects"
-        echo ${{ needs.sonar.outputs.list_projects }}
+        echo kk ${{ steps.list_projects.outputs.projects }}
 #
