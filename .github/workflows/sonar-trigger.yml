@@ -25,12 +25,14 @@ jobs:
     #     MAVEN_REPO_PASSWORD: ${{ secrets.MAVEN_REPO_PASSWORD }}
     #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     #   run: mvn sonar:sonar -Dsonar.host.url=${{ env.SONAR_URL }} -Dsonar.login=${{ secrets.SONAR_LOGIN }} -Dsonar.organization=${{ env.SONAR_ORGANIZATION }} -Dsonar.projectKey=${{ github.event.client_payload.project }}
-    - name: Trigger sonar
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Trigger sonar analysis
+      # env:
+      #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        printenv
+
         for project in alarm-datastore-cassandra alarm-datastore-common-test; do
-          echo "Triggering sonar for ${project}"
+          echo "Triggering sonar analysis for project ${project}"
 
           curl -s --location --request POST "https://api.github.com/repos/${{ env.GITHUB_REPOSITORY }}/dispatches" \
           --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
