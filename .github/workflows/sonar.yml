@@ -36,6 +36,8 @@ jobs:
     #   with:
     #     path: ~/.m2/repository/
     #     key: ${{ runner.os }}-m2
+    - name: debug
+      run: echo ${{ github.event.client_payload.projects }}
     - name: Configure maven settings.xml
       run: cp wlan-cloud-services/.github/workflows/maven_settings_template.xml /home/runner/.m2/settings.xml
     - name: Maven build
